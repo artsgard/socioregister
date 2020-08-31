@@ -37,6 +37,13 @@ public class AddressServiceTest {
         assertThat(addresses).isNotEmpty();
         assertThat(addresses).isNotEmpty().hasSize(2);
     }
+    
+    @Test
+    public void testFindAllAddresses_in_case_not_found() {
+        List<AddressModel> addresses = addressRepo.findAll();
+        assertThat(addresses).isNotEmpty();
+        assertThat(addresses).isNotEmpty().hasSize(2);
+    }
 
     @Test
     public void testFindAddressById() {

@@ -1,6 +1,5 @@
 package com.artsgard.socioregister.service;
 
-import com.artsgard.socioregister.service.MapperService;
 import com.artsgard.socioregister.DTO.AddressDTO;
 import com.artsgard.socioregister.DTO.SocioDTO;
 import com.artsgard.socioregister.model.AddressModel;
