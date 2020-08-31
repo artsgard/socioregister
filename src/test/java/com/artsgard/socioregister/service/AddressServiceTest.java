@@ -1,5 +1,6 @@
 package com.artsgard.socioregister.service;
 
+import com.artsgard.socioregister.exception.ResourceNotFoundException;
 import com.artsgard.socioregister.model.AddressModel;
 import com.artsgard.socioregister.model.AddressModel.AddressType;
 import com.artsgard.socioregister.model.CountryModel;
@@ -11,6 +12,7 @@ import com.artsgard.socioregister.repository.SocioRepository;
 import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -30,6 +32,9 @@ public class AddressServiceTest {
 
     @Autowired
     private LanguageRepository languageRepo;
+    
+    public static final Long NON_EXISTING_ID = 7000L;
+    public static final String NON_EXISTING_USERNAME = "SDFSDFSFSDFSDF";
 
     @Test
     public void testFindAllAddresses() {
@@ -39,10 +44,10 @@ public class AddressServiceTest {
     }
     
     @Test
-    public void testFindAllAddresses_in_case_not_found() {
+    public void testFindAllAddresses_not_found() {
+        addressRepo.deleteAll();
         List<AddressModel> addresses = addressRepo.findAll();
-        assertThat(addresses).isNotEmpty();
-        assertThat(addresses).isNotEmpty().hasSize(2);
+         assertThatExceptionOfType(ResourceNotFoundException.class);
     }
 
     @Test
@@ -50,11 +55,23 @@ public class AddressServiceTest {
         Optional<AddressModel> address = addressRepo.findById(1L);
         assertThat(address.get().getStreet()).isEqualTo("Edmondstraat 36");
     }
+    
+    @Test
+    public void testFindAddressById_not_found() {
+        Optional<AddressModel> address = addressRepo.findById(NON_EXISTING_ID);
+        assertThatExceptionOfType(ResourceNotFoundException.class);
+    }
 
     @Test
     public void testFindAddressBySocioId() {
         List<AddressModel> addresses = addressRepo.findAddressesBySocioId(1L);
         assertThat(addresses).isNotEmpty().hasSize(2);
+    }
+    
+    @Test
+    public void testFindAddressBySocioId_not_found() {
+        List<AddressModel> addresses = addressRepo.findAddressesBySocioId(NON_EXISTING_ID);
+        assertThatExceptionOfType(ResourceNotFoundException.class);
     }
 
     @Test
@@ -74,6 +91,12 @@ public class AddressServiceTest {
         AddressModel updatedAddressFromDB = addressRepo.save(updateAddress);
         assertThat(updateAddress).isEqualTo(updatedAddressFromDB);
     }
+    
+     @Test
+    public void testUpdateAddress_not_found() {
+        AddressModel updateAddress = addressRepo.getOne(NON_EXISTING_ID);
+        assertThatExceptionOfType(ResourceNotFoundException.class);
+    }
 
     @Test
     public void testDeleteAddressById() {
@@ -84,5 +107,11 @@ public class AddressServiceTest {
         Long id = address.getId();
         addressRepo.deleteById(address.getId());
         assertThat(addressRepo.existsById(id)).isFalse();
+    }
+    
+    @Test
+    public void testDeleteAddressById_not_found() {
+        SocioModel socio = socioRepo.getOne(NON_EXISTING_ID);     
+        assertThatExceptionOfType(ResourceNotFoundException.class);
     }
 }

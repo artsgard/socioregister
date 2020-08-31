@@ -67,7 +67,7 @@ public class SocioServiceImpl implements SocioService {
             socios = socioRepo.getSociosBySortedPage(rows, offset);
         }
 
-        if (socios.isEmpty()) {
+        if (!socios.isEmpty()) {
             List<SocioDTO> socioList = new ArrayList();
             socios.stream().map(sco -> mapperService.mapSocioModelToSocioDTO(sco)).forEachOrdered(scDTO -> {
                 socioList.add(scDTO);
