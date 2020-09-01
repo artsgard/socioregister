@@ -92,9 +92,10 @@ public class AddressServiceMockitoTest {
         assertThatExceptionOfType(ResourceNotFoundException.class);
     }
 
-    //@Test
+    @Test
     public void testFindAddressById() {
-        given(addressRepo.getOne(1L)).willReturn(addressMock);
+        given(addressRepo.findById(1L)).willReturn(Optional.of(addressMock));
+        given(mapperService.mapAddressModelToAddressDTO(new AddressModel())).willReturn(addressDTOMock);
         AddressDTO addr = addressService.findOneAddressById(1L);
         assertThat(addr.getStreet()).isEqualTo(addressMock.getStreet());
     }
@@ -115,8 +116,6 @@ public class AddressServiceMockitoTest {
     @Test()
     public void testFindAddressBySocioId_not_found() throws Exception {
         given(addressRepo.findAddressesBySocioId(7000L)).willReturn(addressesEmptyMock);
-       
-        
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
            List<AddressDTO> addresses = addressService.findAddressesBySocioId(7000L);
         });
@@ -124,11 +123,12 @@ public class AddressServiceMockitoTest {
 
     //@Test
     public void testSaveAddress() {
-        SocioModel socio = socioRepo.getOne(1L);
-        CountryModel country = countryRepo.findByCode("NL");
-        AddressModel address = new AddressModel(null, "Wagner street 4", "München", "5426", "Bauern", country, "soem description", AddressType.HOME, socio);
-        addressRepo.save(address);
-        assertThat(address.getId()).isNotNull();
+        CountryModel country = new CountryModel(1L, "Netherlands", "NL");
+        AddressModel address = new AddressModel(1L, "Wagner street 4", "München", "5426", "Bauern", country, "soem description", AddressType.HOME, socioMock);
+        given(addressRepo.save(address)).willReturn(address);
+        given(socioRepo.findById(1L)).willReturn(Optional.of(socioMock));
+        AddressDTO addr = addressService.saveAddress(addressDTOMock);
+        assertThat(addr).isNotNull();
     }
 
     //@Test
