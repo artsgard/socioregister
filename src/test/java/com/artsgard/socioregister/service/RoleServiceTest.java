@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-//@Sql({"/schema.sql"})
 @DataJpaTest
 public class RoleServiceTest {
 

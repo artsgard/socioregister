@@ -28,8 +28,6 @@ import org.modelmapper.ModelMapper;
  */
 @ExtendWith(MockitoExtension.class)
 public class MapperServiceTest {
-
-    //private final MapperService mapperService = new MapperServiceImpl();
     private SocioDTO socioDTOMock;
     private SocioModel socioModelMock;
     private AddressDTO addressDTOMock;

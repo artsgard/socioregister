@@ -19,11 +19,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 
-
 @TestPropertySource({"classpath:application-test.properties"})
-//@Sql({"/data-h2.sql"})
+
 @DataJpaTest
-public class SocioServicelTest {
+public class SocioServiceDataJpaTest {
 
     @Autowired
     private SocioRepository socioRepo;
