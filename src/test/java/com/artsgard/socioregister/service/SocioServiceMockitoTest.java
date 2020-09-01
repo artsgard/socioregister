@@ -1,6 +1,8 @@
 package com.artsgard.socioregister.service;
 
+import com.artsgard.socioregister.DTO.AddressDTO;
 import com.artsgard.socioregister.DTO.FilterDTO;
+import com.artsgard.socioregister.DTO.SocioDTO;
 import com.artsgard.socioregister.exception.ResourceNotFoundException;
 import com.artsgard.socioregister.model.AddressModel;
 import com.artsgard.socioregister.model.CountryModel;
@@ -18,10 +20,16 @@ import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.convention.MatchingStrategies;
 
 @ExtendWith(MockitoExtension.class)
 public class SocioServiceMockitoTest {
@@ -44,63 +52,107 @@ public class SocioServiceMockitoTest {
     @InjectMocks
     SocioServiceImpl socioService;
 
+    @Mock
+    private MapperService mapperService;
+
+    private SocioModel socioModelMock1;
+    private SocioModel socioModelMock2;
+    private SocioDTO socioDTOMock1;
+    private SocioDTO socioDTOMock2;
+    private List<SocioModel> socioModelListMock;
     public static final Long NON_EXISTING_ID = 7000L;
     public static final String NON_EXISTING_USERNAME = "SDFSDFSFSDFSDF";
 
-    //@Test
+    @BeforeEach
+    public void setup() {
+        LanguageModel lang1 = new LanguageModel(1L, "Netherlands", "NL");
+        LanguageModel lang2 = new LanguageModel(1L, "Spain", "ES");
+        List<LanguageModel> langs = new ArrayList();
+        langs.add(lang1);
+        langs.add(lang2);
+        socioModelMock1 = new SocioModel(null, "username1", "secret1", "firstname1", "lastname1", "username1@gmail.com", true, langs, null);
+        socioModelMock1.setRegisterDate(new Timestamp(System.currentTimeMillis()));
+        socioModelMock1.setLastCheckinDate(new Timestamp(System.currentTimeMillis()));
+
+        socioModelMock2 = new SocioModel(null, "username2", "secret2", "firstname2", "lastname2", "username2@gmail.com", true, langs, null);
+        socioModelMock2.setRegisterDate(new Timestamp(System.currentTimeMillis()));
+        socioModelMock2.setLastCheckinDate(new Timestamp(System.currentTimeMillis()));
+
+        socioDTOMock1 = new SocioDTO(null, "username1", "secret1", "firstname1", "lastname1", "username1@gmail.com", true, langs, null);
+        socioModelListMock = new ArrayList();
+        socioModelListMock.add(socioModelMock1);
+        socioModelListMock.add(socioModelMock2);
+    }
+
+    @Test
     public void findAllSociosTest() {
-        List<SocioModel> socios = socioRepo.findAll();
-        assertThat(socios).isNotEmpty();
-        assertThat(socios).hasSize(3);
+        given(socioRepo.findAll()).willReturn(socioModelListMock);
+        given(mapperService.mapSocioModelToSocioDTO(any(SocioModel.class))).willReturn(socioDTOMock1);
+        List<SocioDTO> list = socioService.findAllSocios();
+        assertThat(list).isNotEmpty().hasSize(2);
     }
 
-    //@Test
+    @Test
     public void findAllSociosTest_not_found() {
-        socioRepo.deleteAll();
-        List<SocioModel> socios = socioRepo.findAll();
-        assertThatExceptionOfType(ResourceNotFoundException.class);
+        List<SocioModel> emptyList = new ArrayList();
+        given(socioRepo.findAll()).willReturn(emptyList);
+        //given(mapperService.mapSocioModelToSocioDTO(any(SocioModel.class))).willReturn(any(SocioDTO.class));
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            socioService.findAllSocios();
+        });
     }
 
-    //@Test
+    @Test
     public void findSocioByIdTest() {
-        SocioModel sc = socioRepo.getOne(1L);
+        given(socioRepo.findById(1L)).willReturn(Optional.of(socioModelMock1));
+        given(mapperService.mapSocioModelToSocioDTO(any(SocioModel.class))).willReturn(socioDTOMock1);
+        SocioDTO sc = socioService.findSocioById(1L);
         assertThat(sc).isNotNull();
+        assertThat(sc.getUsername()).isEqualTo(socioModelMock1.getUsername());
     }
 
-    //@Test
+    @Test
     public void findSocioByIdTest_not_found() {
-        SocioModel sc = socioRepo.getOne(NON_EXISTING_ID);
-        assertThatExceptionOfType(ResourceNotFoundException.class);
+        given(socioRepo.findById(1L)).willReturn(Optional.empty());
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            socioService.findSocioById(1L);
+        });
     }
 
-    //@Test
+    @Test
     public void findSocioByUsernameTest() {
-        List<SocioModel> socios = socioRepo.findAll();
-        Optional<SocioModel> optSocio = socioRepo.findByUsername("js");
-        assertThat(optSocio.get().getId()).isNotNull();
-        assertThat(optSocio.get().getUsername()).isEqualTo("js");
+        given(socioRepo.findByUsername("js")).willReturn(Optional.of(socioModelMock1));
+        given(mapperService.mapSocioModelToSocioDTO(any(SocioModel.class))).willReturn(socioDTOMock1);
+        SocioDTO sc = socioService.findSocioByUsername("js");
+        assertThat(sc).isNotNull();
+        assertThat(sc.getUsername()).isEqualTo(socioModelMock1.getUsername());
     }
 
-    //@Test
+    @Test
     public void findSocioByUsernameTest_not_found() {
-        List<SocioModel> socios = socioRepo.findAll();
-        Optional<SocioModel> optSocio = socioRepo.findByUsername(NON_EXISTING_USERNAME);
-        assertThatExceptionOfType(ResourceNotFoundException.class);
+        given(socioRepo.findByUsername("js")).willReturn(Optional.empty());
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            socioService.findSocioByUsername("js");
+        });
     }
 
-    //@Test
+    @Test
     public void saveSocioTest() {
-        LanguageModel lang1 = languageRepo.findByCode("NL");
-        LanguageModel lang2 = languageRepo.findByCode("ES");
+        /*
+        LanguageModel lang1 = new LanguageModel(1L, "German", "DB");
+        LanguageModel lang2 = new LanguageModel(2L, "English", "GB");
         List<LanguageModel> langs = new ArrayList();
         langs.add(lang1);
         langs.add(lang2);
         SocioModel socio = new SocioModel(null, "username", "secret", "first name", "last name", "username@gmail.com", true, langs, null);
+        SocioDTO socioDTO = new SocioDTO(null, "username", "secret", "first name", "last name", "username@gmail.com", true, langs, null);
         socio.setRegisterDate(new Timestamp(System.currentTimeMillis()));
         socio.setLastCheckinDate(new Timestamp(System.currentTimeMillis()));
-        socioRepo.save(socio);
-        assertThat(socio.getId()).isNotNull();
-        assertThat(socio.getUsername()).isEqualTo("username");
+*/
+        given(socioRepo.save(socioModelMock1)).willReturn(socioModelMock1);
+        given(mapperService.mapSocioDTOToSocioModel(any(SocioDTO.class))).willReturn(socioModelMock1);
+        SocioDTO sc = socioService.saveSocio(socioDTOMock1);
+        assertThat(sc).isNotNull(); // why is this null!!!!!
     }
 
     //@Test

@@ -41,7 +41,6 @@ public class SocioServiceImpl implements SocioService {
     @Override
     public List<SocioDTO> findAllSocios() throws ResourceNotFoundException {
         List<SocioModel> socios = socioRepo.findAll();
-
         if (socios.isEmpty()) {
             throw new ResourceNotFoundException("no Socios found!");
         } else {

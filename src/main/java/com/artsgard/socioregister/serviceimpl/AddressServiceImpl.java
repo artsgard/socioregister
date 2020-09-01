@@ -72,14 +72,13 @@ public class AddressServiceImpl implements AddressService {
             });
             return list;
         }
-
     }
 
     @Override
     public AddressDTO saveAddress(AddressDTO addressDTO) throws ResourceNotFoundException {
-        AddressModel address = mapperService.mapAddressDTOToAddressModel(addressDTO);
-        Optional<SocioModel> opSocio = socioRepository.findById(addressDTO.getSocioId());
+        Optional<SocioModel> opSocio = socioRepository.findById(addressDTO.getSocioId());   
         if (opSocio.isPresent()) {
+            AddressModel address = mapperService.mapAddressDTOToAddressModel(addressDTO);
             address.setSocio(opSocio.get());
             return mapperService.mapAddressModelToAddressDTO(addressRepository.save(address));
         } else {
