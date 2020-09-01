@@ -77,7 +77,7 @@ public class AddressServiceDataJpaTest {
     public void testSaveAddress() {
         SocioModel socio = socioRepo.getOne(1L);
         CountryModel country = countryRepo.findByCode("NL");
-        AddressModel address = new AddressModel(null, "Wagner street 4", "München", "5426", "Bauern", country, "soem description", AddressType.HOME, socio);
+        AddressModel address = new AddressModel(null, "Wagner street 4", "München", "5426", "Bauern", country, "some description", AddressType.HOME, socio);
         addressRepo.save(address);
         assertThat(address.getId()).isNotNull();
     }
