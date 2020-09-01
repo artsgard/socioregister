@@ -37,7 +37,7 @@ The previous three applications (starter, mock, jpa) form the prelude for the fi
 
 	1) SocioRegister-starter shows how to begin a Micro-Service setup beginning with an empty shell of a Springboot (WEB/REST) application. Stressing the importance of the Maven pom (or Gradle file) and the Springboot Starter Dependencies.
 	
-	2) SocioRegister-mock is already more personalized, adding several Socio-layers to the mix: first the principal layers, the controller, service (interface and implemention), and the Repository; second, from DTO via Modelmapper convertion to Model (Entity) and visa versa; third, the use of the ResponseEntity class at the controllers' returns.
+	2) SocioRegister-mock is already more personalized, adding several Socio-layers to the mix: first the principal layers, the controller, service (interface and implemention), and the Repository; second, from DTO via Modelmapper convertion to Model (Entity) and visa versa; third, the use of the ResponseEntity class at the controller's returns.
 	
 	3) SocioRegister-jpa adds the Spring-data layer in the form of JPA-persistence (Postgres DB). It further goes into the implementation of validation messages. And finally one finds an implementaion of a Spring Global Exception Handeling (amung others the ResourceNotFoundException) based on the @RestControllerAdvice and the ResponseEntityExceptionHandler.
 
