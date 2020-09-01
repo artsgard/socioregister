@@ -91,13 +91,13 @@ TestRestTemplate is very similar to the RestTemplate it starts a real server for
 
 A class annotated with DataJpaTest invokes a fully functional JPA persistence context to be executed for a H2 internal db. The next two annotations are the setup of this test environment: @TestPropertySource({"classpath:application-test.properties”}), @DataJpaTest. As a matter of exercise I have tested all service method's, which have no business logic, db transactions. Normally one would not test the standard implemented JPA methods such as findById, but only the ones that run on native-queries done by the developer, right!
 
-#### Test Class, Mocks, and Injected Dependencies
+#### Test Class, Mocks, Injected Dependencies and Pure Mockito Testing
 
 The class under tested should be mocked by using the @InjectMocks annotation. The services and repositories mocks should be annotated with @MockBean and within a non-Spring Mockito context (@ExtendWith(MockitoExtension.class)) with  @Mock. The JacksonTester, which handles the json-objects conversion, should be instantiated outside Spring. In Spring  the class can be injected by @Autowired.
 
 About the Test Methods in General
 
-Before any test method you declare a method called setup() annotated with @BeforeEach to prepare things before each test. A test method is a test method when annotated with @Test. The code uses BDDMockito (Behavior Driven Development) and AssertJ with the general structure of: given -> when -> than resulting in easy readable test. 
+Before any test method you declare a method called setup() annotated with @BeforeEach to prepare things before each test. A test method is a test method when annotated with @Test. The code uses BDDMockito (Behavior Driven Development) and AssertJ with the general structure of: given -> when -> than resulting in easy readable test. The BDD test-paradigma will be noted especialy at the Mockito-test-version of the service implemtation classes like SocioServiceMockitoTest at the test package.
 
 
 ### Use-cases
@@ -170,3 +170,9 @@ And by using Postman:
 	-change state: put http://localhost:8081/associatedSocio/1/2/true    (/{socioId}/{associatedSocioId}/{boolean} for ACCEPTED/ DENIED)
 	-delete an associated socio: delete http://localhost:8081/associatedSocio/1/2    (/{socioId}/{associatedSocioId})
 	
+### Appendix Use-cases for the PaginateSortSocioController class
+
+	paginate with default: http://localhost:8081/paginateSocio
+	paginate with row/ offset params: http://localhost:8081/paginateSocio?rows=2&offset=0
+	idem plus language filter: http://localhost:8081/paginateSocio?rows=2&offset=0&language=ES
+	idem plus country filter: http://localhost:8081/paginateSocio?rows=2&offset=0&country=NL
