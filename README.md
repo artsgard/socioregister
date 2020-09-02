@@ -93,11 +93,18 @@ A class annotated with DataJpaTest invokes a fully functional JPA persistence co
 
 #### Test Class, Mocks, Injected Dependencies and Pure Mockito Testing
 
-The class under tested should be mocked by using the @InjectMocks annotation. The services and repositories mocks should be annotated with @MockBean and within a non-Spring Mockito context (@ExtendWith(MockitoExtension.class)) with  @Mock. The JacksonTester, which handles the json-objects conversion, should be instantiated outside Spring. In Spring  the class can be injected by @Autowired.
+In theory Junit testing by use of Mockitos is simple:
+
+	1) You add the @ExtendWith(MockitoExtension.class) at the class level for Junit5 testing;
+	2) You annotate the class under test (SUT) with @InjectMocks e.g. @InjectMocks SocioServiceImpl socioService;
+	3) All other dependencies, concerning the class under test, you declare es mocks by using the @Mock annotation (SocioRepository, MapperService, etc.);
+	4) You provide the behaviour of those mocks by the given method, e.g. given(socioRepo.findById(1L)).willReturn(Optional.of(socioModelMock1));
+	
+Spring uses @MockBean instead of @Mock. The JacksonTester, which handles the json-objects conversion, should be instantiated outside Spring. In Spring  the class can be injected by @Autowired.
 
 About the Test Methods in General
 
-Before any test method you declare a method called setup() annotated with @BeforeEach to prepare things before each test. A test method is a test method when annotated with @Test. The code uses BDDMockito (Behavior Driven Development) and AssertJ with the general structure of: given -> when -> than resulting in easy readable test. The BDD test-paradigma will be noted especialy at the Mockito-test-version of the service implemtation classes like SocioServiceMockitoTest at the test package.
+Before any test method you declare a method called setup() annotated with @BeforeEach to prepare things before each test. A test method is a test method when annotated with @Test. The code uses BDDMockito (Behavior Driven Development) and AssertJ with the general structure of: given -> when -> than resulting in easy readable test.
 
 
 ### Use-cases
