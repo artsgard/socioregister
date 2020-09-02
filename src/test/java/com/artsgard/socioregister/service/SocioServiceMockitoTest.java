@@ -25,9 +25,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.convention.MatchingStrategies;
 
@@ -59,6 +62,7 @@ public class SocioServiceMockitoTest {
     private SocioModel socioModelMock2;
     private SocioDTO socioDTOMock1;
     private SocioDTO socioDTOMock2;
+    private SocioModel socioModelWithIdMock;
     private List<SocioModel> socioModelListMock;
     public static final Long NON_EXISTING_ID = 7000L;
     public static final String NON_EXISTING_USERNAME = "SDFSDFSFSDFSDF";
@@ -79,6 +83,7 @@ public class SocioServiceMockitoTest {
         socioModelMock2.setLastCheckinDate(new Timestamp(System.currentTimeMillis()));
 
         socioDTOMock1 = new SocioDTO(null, "username1", "secret1", "firstname1", "lastname1", "username1@gmail.com", true, langs, null);
+        socioModelWithIdMock = new SocioModel(1L, "username1", "secret1", "firstname1", "lastname1", "username1@gmail.com", true, langs, null);
         socioModelListMock = new ArrayList();
         socioModelListMock.add(socioModelMock1);
         socioModelListMock.add(socioModelMock2);
@@ -138,82 +143,77 @@ public class SocioServiceMockitoTest {
 
     @Test
     public void saveSocioTest() {
-        /*
-        LanguageModel lang1 = new LanguageModel(1L, "German", "DB");
-        LanguageModel lang2 = new LanguageModel(2L, "English", "GB");
-        List<LanguageModel> langs = new ArrayList();
-        langs.add(lang1);
-        langs.add(lang2);
-        SocioModel socio = new SocioModel(null, "username", "secret", "first name", "last name", "username@gmail.com", true, langs, null);
-        SocioDTO socioDTO = new SocioDTO(null, "username", "secret", "first name", "last name", "username@gmail.com", true, langs, null);
-        socio.setRegisterDate(new Timestamp(System.currentTimeMillis()));
-        socio.setLastCheckinDate(new Timestamp(System.currentTimeMillis()));
-*/
         given(socioRepo.save(socioModelMock1)).willReturn(socioModelMock1);
         given(mapperService.mapSocioDTOToSocioModel(any(SocioDTO.class))).willReturn(socioModelMock1);
         SocioDTO sc = socioService.saveSocio(socioDTOMock1);
         assertThat(sc).isNotNull(); // why is this null!!!!!
     }
 
-    //@Test
+    @Test
     public void updateSocioTest() {
-        Optional<SocioModel> optSocio = socioRepo.findById(1L);
-        SocioModel updateSocio = optSocio.get();
-        updateSocio.setUsername("js edited");
-        updateSocio.setActive(false);
-        SocioModel updatedSocioFromDB = socioRepo.save(updateSocio);
-        assertThat(optSocio.get()).isEqualTo(updatedSocioFromDB);
+        Long updateId= 456L;
+        socioDTOMock1.setId(updateId);
+        socioModelMock1.setId(updateId);
+        given(socioRepo.findById(any(Long.class))).willReturn(Optional.of(socioModelMock1));
+        given(socioRepo.save(socioModelMock1)).willReturn(socioModelMock1);
+        given(mapperService.mapSocioDTOToSocioModel(any(SocioDTO.class))).willReturn(socioModelMock1);
+        
+        SocioDTO sc = socioService.updateSocio(socioDTOMock1);
+        assertThat(sc).isNotNull();
     }
 
-    //@Test
+    @Test
     public void updateSocioTest_not_found() {
-        SocioModel socio = socioRepo.getOne(NON_EXISTING_ID);
-        assertThatExceptionOfType(ResourceNotFoundException.class);
+        given(socioRepo.findById(any(Long.class))).willReturn(Optional.empty());
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            socioDTOMock1.setId(any(Long.class));
+            socioService.updateSocio(socioDTOMock1);
+        });
     }
 
-    //@Test
+    @Test
     public void deleteSocioByIdTest() {
-        LanguageModel lang1 = languageRepo.findByCode("NL");
-        LanguageModel lang2 = languageRepo.findByCode("ES");
-        List<LanguageModel> langs = new ArrayList();
-        langs.add(lang1);
-        langs.add(lang2);
-        SocioModel socio = new SocioModel(null, "username to delete", "secret to delete", "first name to delete", "last name to delete", "todelete@gmail.com", true, langs, null);
-        socio.setRegisterDate(new Timestamp(System.currentTimeMillis()));
-        socio.setLastCheckinDate(new Timestamp(System.currentTimeMillis()));
-        socioRepo.save(socio);
-        Long id = socio.getId();
-        socioRepo.deleteById(id);
-        Optional<SocioModel> deletedSocio = socioRepo.findById(id);
-        assertThat(deletedSocio.isPresent()).isFalse();
+        Long deleteId= 456L;
+        socioRepo.deleteById(deleteId);
+        verify(socioRepo, times(1)).deleteById(eq(deleteId));
     }
 
-    //@Test
+    @Test
     public void deleteSocioByIdTest_not_found() {
-        SocioModel socio = socioRepo.getOne(NON_EXISTING_ID);
-        assertThatExceptionOfType(ResourceNotFoundException.class);
+        given(socioRepo.findById(any(Long.class))).willReturn(Optional.empty());
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            socioService.deleteSocioById(any(Long.class));
+        });
     }
 
-    //@Test
+    @Test
     public void hasSocioByIdTest() {
-        Optional<SocioModel> optSocio = socioRepo.findByUsername("js");
-        SocioModel socio = optSocio.get();
-        assertThat(socioRepo.existsById(socio.getId())).isTrue();
+        given(socioRepo.existsById(any(Long.class))).willReturn(true);
+        Boolean flag = socioService.hasSocioById(any(Long.class));
+        assertThat(flag).isTrue();
+    }
+    
+    @Test
+    public void hasSocioByIdTest_false() {
+        given(socioRepo.existsById(any(Long.class))).willReturn(false);
+        Boolean flag = socioService.hasSocioById(any(Long.class));
+        assertThat(flag).isFalse();
     }
 
-    //@Test
+    @Test
     public void isSocioActiveByIdTest() {
-        Optional<SocioModel> optSocio = socioRepo.findByUsername("js");
-        SocioModel socio = optSocio.get();
-        socioRepo.save(socio);
-        socio.setActive(Boolean.FALSE);
-        assertThat(socio.getActive()).isFalse();
+        given(socioRepo.findById(any(Long.class))).willReturn(Optional.of(socioModelMock1));
+        socioModelMock1.setActive(Boolean.TRUE);
+        Boolean flag = socioService.isSocioActiveById(any(Long.class));
+         assertThat(flag).isTrue();
     }
 
-    //@Test
+    @Test
     public void isSocioActiveByIdTest_not_found() {
-        SocioModel socio = socioRepo.getOne(NON_EXISTING_ID);
-        assertThatExceptionOfType(ResourceNotFoundException.class);
+        given(socioRepo.findById(any(Long.class))).willReturn(Optional.empty());
+         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            socioService.isSocioActiveById(any(Long.class));
+        });
     }
 
     //@Test

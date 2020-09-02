@@ -128,9 +128,7 @@ public class SocioServiceImpl implements SocioService {
      */
     @Override
     public SocioDTO updateSocio(final SocioDTO socioDTO) throws ResourceNotFoundException {
-
         Optional<SocioModel> optSocio = socioRepo.findById(socioDTO.getId());
-        SocioDTO updatedDTO;
         if (optSocio.isPresent()) {
             SocioModel repoSocio = optSocio.get();
             if (socioDTO.getUsername() == null) {
@@ -201,9 +199,9 @@ public class SocioServiceImpl implements SocioService {
     public boolean isSocioActiveById(Long id) throws ResourceNotFoundException {
         Optional<SocioModel> opSocio = socioRepo.findById(id);
         if (opSocio.isPresent()) {
-            return true;
+            return opSocio.get().getActive();
         } else {
-            return false;
+           throw new ResourceNotFoundException("no socio found with id: " + id);
         }
     }
 }
