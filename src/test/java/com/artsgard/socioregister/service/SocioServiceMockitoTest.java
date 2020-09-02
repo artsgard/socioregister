@@ -7,11 +7,7 @@ import com.artsgard.socioregister.model.AddressModel;
 import com.artsgard.socioregister.model.CountryModel;
 import com.artsgard.socioregister.model.LanguageModel;
 import com.artsgard.socioregister.model.SocioModel;
-import com.artsgard.socioregister.repository.AddressRepository;
-import com.artsgard.socioregister.repository.CountryRepository;
-import com.artsgard.socioregister.repository.LanguageRepository;
 import com.artsgard.socioregister.repository.SocioRepository;
-import com.artsgard.socioregister.serviceimpl.AddressServiceImpl;
 import com.artsgard.socioregister.serviceimpl.SocioServiceImpl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -36,19 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class SocioServiceMockitoTest {
 
     @Mock
-    private AddressRepository addressRepo;
-
-    @Mock
     private SocioRepository socioRepo;
-
-    @Mock
-    private CountryRepository countryRepo;
-
-    @Mock
-    private AddressServiceImpl addressService;
-
-    @Mock
-    private LanguageRepository languageRepo;
 
     @InjectMocks
     SocioServiceImpl socioService;
@@ -60,9 +44,10 @@ public class SocioServiceMockitoTest {
     private SocioModel socioModelMock2;
     private SocioDTO socioDTOMock1;
     private SocioDTO socioDTOMock2;
-    private SocioModel socioModelWithIdMock;
     private List<SocioModel> socioModelListMock;
     public static final Long NON_EXISTING_ID = 7000L;
+    public static final Long EXISTING_ID = 1L;
+    public static final String EXISTING_USERNAME = "username";
     public static final String NON_EXISTING_USERNAME = "SDFSDFSFSDFSDF";
 
     @BeforeEach
@@ -81,7 +66,6 @@ public class SocioServiceMockitoTest {
         socioModelMock2.setLastCheckinDate(new Timestamp(System.currentTimeMillis()));
 
         socioDTOMock1 = new SocioDTO(null, "username1", "secret1", "firstname1", "lastname1", "username1@gmail.com", true, langs, null);
-        socioModelWithIdMock = new SocioModel(1L, "username1", "secret1", "firstname1", "lastname1", "username1@gmail.com", true, langs, null);
         socioModelListMock = new ArrayList();
         socioModelListMock.add(socioModelMock1);
         socioModelListMock.add(socioModelMock2);
@@ -99,7 +83,6 @@ public class SocioServiceMockitoTest {
     public void findAllSociosTest_not_found() {
         List<SocioModel> emptyList = new ArrayList();
         given(socioRepo.findAll()).willReturn(emptyList);
-        //given(mapperService.mapSocioModelToSocioDTO(any(SocioModel.class))).willReturn(any(SocioDTO.class));
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
             socioService.findAllSocios();
         });
@@ -107,40 +90,43 @@ public class SocioServiceMockitoTest {
 
     @Test
     public void findSocioByIdTest() {
-        given(socioRepo.findById(1L)).willReturn(Optional.of(socioModelMock1));
+        socioModelMock1.setId(EXISTING_ID);
+        given(socioRepo.findById(any(Long.class))).willReturn(Optional.of(socioModelMock1));
         given(mapperService.mapSocioModelToSocioDTO(any(SocioModel.class))).willReturn(socioDTOMock1);
-        SocioDTO sc = socioService.findSocioById(1L);
+        SocioDTO sc = socioService.findSocioById(any(Long.class));
         assertThat(sc).isNotNull();
         assertThat(sc.getUsername()).isEqualTo(socioModelMock1.getUsername());
     }
 
     @Test
     public void findSocioByIdTest_not_found() {
-        given(socioRepo.findById(1L)).willReturn(Optional.empty());
+        given(socioRepo.findById(any(Long.class))).willReturn(Optional.empty());
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-            socioService.findSocioById(1L);
+            socioService.findSocioById(any(Long.class));
         });
     }
 
     @Test
     public void findSocioByUsernameTest() {
-        given(socioRepo.findByUsername("js")).willReturn(Optional.of(socioModelMock1));
+        socioModelMock1.setId(EXISTING_ID);
+        given(socioRepo.findByUsername(EXISTING_USERNAME)).willReturn(Optional.of(socioModelMock1));
         given(mapperService.mapSocioModelToSocioDTO(any(SocioModel.class))).willReturn(socioDTOMock1);
-        SocioDTO sc = socioService.findSocioByUsername("js");
+        SocioDTO sc = socioService.findSocioByUsername(EXISTING_USERNAME);
         assertThat(sc).isNotNull();
         assertThat(sc.getUsername()).isEqualTo(socioModelMock1.getUsername());
     }
 
     @Test
     public void findSocioByUsernameTest_not_found() {
-        given(socioRepo.findByUsername("js")).willReturn(Optional.empty());
+        given(socioRepo.findByUsername(EXISTING_USERNAME)).willReturn(Optional.empty());
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-            socioService.findSocioByUsername("js");
+            socioService.findSocioByUsername(EXISTING_USERNAME);
         });
     }
 
     @Test
     public void saveSocioTest() {
+        socioModelMock1.setId(EXISTING_ID);
         given(socioRepo.save(socioModelMock1)).willReturn(socioModelMock1);
         given(mapperService.mapSocioDTOToSocioModel(any(SocioDTO.class))).willReturn(socioModelMock1);
         SocioDTO sc = socioService.saveSocio(socioDTOMock1);
@@ -149,9 +135,8 @@ public class SocioServiceMockitoTest {
 
     @Test
     public void updateSocioTest() {
-        Long updateId= 456L;
-        socioDTOMock1.setId(updateId);
-        socioModelMock1.setId(updateId);
+        socioDTOMock1.setId(EXISTING_ID);
+        socioModelMock1.setId(EXISTING_ID);
         given(socioRepo.findById(any(Long.class))).willReturn(Optional.of(socioModelMock1));
         given(socioRepo.save(socioModelMock1)).willReturn(socioModelMock1);
         given(mapperService.mapSocioDTOToSocioModel(any(SocioDTO.class))).willReturn(socioModelMock1);
@@ -171,9 +156,8 @@ public class SocioServiceMockitoTest {
 
     @Test
     public void deleteSocioByIdTest() {
-        Long deleteId= 456L;
-        socioRepo.deleteById(deleteId);
-        verify(socioRepo, times(1)).deleteById(eq(deleteId));
+        socioRepo.deleteById(EXISTING_ID);
+        verify(socioRepo, times(1)).deleteById(eq(EXISTING_ID));
     }
 
     @Test
@@ -200,6 +184,7 @@ public class SocioServiceMockitoTest {
 
     @Test
     public void isSocioActiveByIdTest() {
+        socioModelMock1.setId(EXISTING_ID);
         given(socioRepo.findById(any(Long.class))).willReturn(Optional.of(socioModelMock1));
         socioModelMock1.setActive(Boolean.TRUE);
         Boolean flag = socioService.isSocioActiveById(any(Long.class));

@@ -24,17 +24,27 @@ public class AssociatedSocioServiceImpl implements AssociatedSocioService {
 
     @Autowired
     private SocioRepository socioRepò;
-    
+
     @Autowired
     private AssociatedSocioRepository associatedSocioRepo;
-    
-     public AssociatedSocioServiceImpl() { 
+
+    public AssociatedSocioServiceImpl() {
         logger = LoggerFactory.getLogger(SocioServiceImpl.class);
     }
 
+    @Override
+    public SocioAssociatedSocio getAssociatedSocioBySocioIdAndAssociatedSocioId(Long socioId, Long associatedSocioId) throws ResourceNotFoundException {
+
+        Optional<SocioAssociatedSocio> optAsc = associatedSocioRepo.getAssociatedSocioBySocioIdAndAssociatedSocioId(socioId, associatedSocioId);
+        if (optAsc.isPresent()) {
+            return optAsc.get();
+        } else {
+            throw new ResourceNotFoundException("No socio present with " + socioId);
+        }
+    }
 
     @Override
-    public void registerAssociatedSocio(Long socioId, Long associatedSocioId) {
+    public SocioAssociatedSocio registerAssociatedSocio(Long socioId, Long associatedSocioId) {
         Optional<SocioModel> optSocio = socioRepò.findById(socioId);
         Optional<SocioModel> optAssociatedSocio = socioRepò.findById(associatedSocioId);
         isPresent(optSocio, optAssociatedSocio, socioId, associatedSocioId);
@@ -42,29 +52,29 @@ public class AssociatedSocioServiceImpl implements AssociatedSocioService {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         SocioAssociatedSocio assSocio = new SocioAssociatedSocio(socioId, associatedSocioId, optSocio.get(), optAssociatedSocio.get(), AssociatedSocioState.PENDING, now);
 
-        associatedSocioRepo.save(assSocio);
+        return associatedSocioRepo.save(assSocio);
     }
 
     @Override
-    public void updateStateAssociatedSocio(Long socioId, Long associatedSocioId, boolean state) {
+    public SocioAssociatedSocio updateStateAssociatedSocio(Long socioId, Long associatedSocioId, boolean state) {
         Optional<SocioModel> optSocio = socioRepò.findById(socioId);
         Optional<SocioModel> optAssociatedSocio = socioRepò.findById(associatedSocioId);
         isPresent(optSocio, optAssociatedSocio, socioId, associatedSocioId);
-        
+
         AssociatedSocioState changedState;
         if (state) {
             changedState = AssociatedSocioState.ACCEPTED;
         } else {
             changedState = AssociatedSocioState.DENIED;
         }
-       
+
         Timestamp now = new Timestamp(System.currentTimeMillis());
         SocioAssociatedSocio assSocio = new SocioAssociatedSocio(socioId, associatedSocioId, optSocio.get(), optAssociatedSocio.get(), changedState, now);
-        associatedSocioRepo.save(assSocio);
+        return associatedSocioRepo.save(assSocio);
     }
 
     @Override
-    public void deleteStateAssociatedSocio(Long socioId, Long associatedSocioId) {
+    public void deleteAssociatedSocio(Long socioId, Long associatedSocioId) {
         Optional<SocioModel> optSocio = socioRepò.findById(socioId);
         Optional<SocioModel> optAssociatedSocio = socioRepò.findById(associatedSocioId);
         isPresent(optSocio, optAssociatedSocio, socioId, associatedSocioId);

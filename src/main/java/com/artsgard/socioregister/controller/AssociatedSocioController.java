@@ -32,6 +32,12 @@ public class AssociatedSocioController {
     @Autowired
     private AssociatedSocioRepository repo;
     
+    @GetMapping(path = "/{socioId}/{associatesdSocioId}")
+    public ResponseEntity<?> getAssociatedSocio(@PathVariable Long socioId, @PathVariable Long associatesdSocioId) {
+        SocioAssociatedSocio asc =  associatedSocioService.getAssociatedSocioBySocioIdAndAssociatedSocioId(socioId, associatesdSocioId);
+        return new ResponseEntity<>(asc, HttpStatus.CREATED);
+    }
+    
     @PostMapping(path = "/{socioId}/{associatesdSocioId}")
     public ResponseEntity<?> registerAssociatedSocio(@PathVariable Long socioId, @PathVariable Long associatesdSocioId) {
         associatedSocioService.registerAssociatedSocio(socioId, associatesdSocioId);
@@ -46,7 +52,7 @@ public class AssociatedSocioController {
     
     @DeleteMapping(path = "/{socioId}/{associatedSocioId}")
     public ResponseEntity<?> deleteAssociatedSocio(@PathVariable Long socioId, @PathVariable Long associatedSocioId) {
-        associatedSocioService.deleteStateAssociatedSocio(socioId, associatedSocioId);
+        associatedSocioService.deleteAssociatedSocio(socioId, associatedSocioId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     

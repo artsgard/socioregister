@@ -2,6 +2,8 @@ package com.artsgard.socioregister.repository;
 
 import com.artsgard.socioregister.model.SocioAssociatedSocio;
 import com.artsgard.socioregister.model.SocioAssociatedSocioId;
+import com.artsgard.socioregister.model.SocioModel;
+import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -22,5 +24,5 @@ public interface AssociatedSocioRepository extends JpaRepository<SocioAssociated
     public void deleteAssociatedSocio(@Param("socioId") Long socioId, @Param("associatedSocioId") Long associatedSocioId);
     
     @Query(value = ASSOCIATED_SOCIO_BY_IDS, nativeQuery = true)
-    public SocioAssociatedSocio getAssociatedSocioBySocioIdAndAssociatedSocioId(@Param("socioId") Long socioId, @Param("associatedSocioId") Long associatedSocioId);
+    public Optional<SocioAssociatedSocio> getAssociatedSocioBySocioIdAndAssociatedSocioId(@Param("socioId") Long socioId, @Param("associatedSocioId") Long associatedSocioId);
 }
