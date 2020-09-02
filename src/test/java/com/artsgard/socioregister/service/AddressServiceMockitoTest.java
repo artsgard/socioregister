@@ -10,6 +10,7 @@ import com.artsgard.socioregister.model.SocioModel;
 import com.artsgard.socioregister.repository.AddressRepository;
 import com.artsgard.socioregister.repository.CountryRepository;
 import com.artsgard.socioregister.repository.SocioRepository;
+import static com.artsgard.socioregister.service.SocioServiceMockitoTest.EXISTING_ID;
 import com.artsgard.socioregister.serviceimpl.AddressServiceImpl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -21,9 +22,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,9 +52,9 @@ public class AddressServiceMockitoTest {
     private SocioModel socioMock;
     private AddressModel addressMock;
     private AddressModel addressMock2;
-    private AddressModel addressModelEmptyMock = new AddressModel();
-    private AddressDTO addressDTOEmptyMock = new AddressDTO();
-    private List<AddressModel> addressesEmptyMock = new ArrayList();
+    private final AddressModel addressModelEmptyMock = new AddressModel();
+    private final AddressDTO addressDTOEmptyMock = new AddressDTO();
+    private final List<AddressModel> addressesEmptyMock = new ArrayList();
     private AddressDTO addressDTOMock;
     private List<AddressModel> addressesMock;
 
@@ -69,32 +74,35 @@ public class AddressServiceMockitoTest {
 
         CountryModel country = new CountryModel(1L, "", "");
         addressesMock = new ArrayList();
-        addressMock = new AddressModel(1L, "Wagner street 4", "München", "5426", "Bauern", country, "some Wagner description", AddressType.HOME, socioMock);
-        addressDTOMock = new AddressDTO(1L, "Wagner street 4", "München", "5426", "Bauern", country, "some Wagner description", AddressType.HOME, 1L);
-        addressMock2 = new AddressModel(2L, "Bach street 4", "Leipzich", "5426", "Sachsen", country, "some Bach description", AddressType.HOME, socioMock);
+        addressMock = new AddressModel(null, "Wagner street 4", "München", "5426", "Bauern", country, "some Wagner description", AddressType.HOME, socioMock);
+        addressDTOMock = new AddressDTO(null, "Wagner street 4", "München", "5426", "Bauern", country, "some Wagner description", AddressType.HOME, 1L);
+        addressMock2 = new AddressModel(null, "Bach street 4", "Leipzich", "5426", "Sachsen", country, "some Bach description", AddressType.HOME, socioMock);
         addressesMock.add(addressMock);
         addressesMock.add(addressMock2);
     }
 
-    //@Test
+    @Test
     public void testFindAllAddresses() {
         given(addressRepo.findAll()).willReturn(addressesMock);
-        given(mapperService.mapAddressModelToAddressDTO(new AddressModel())).willReturn(addressDTOMock);
+        given(mapperService.mapAddressModelToAddressDTO(any(AddressModel.class))).willReturn(addressDTOMock);
         List<AddressDTO> list = addressService.findAllAddresses();
         assertThat(list).isNotEmpty().hasSize(2);
     }
 
-    //@Test
+    @Test
     public void testFindAllAddresses_not_found() {
-        addressRepo.deleteAll();
-        List<AddressModel> addresses = addressRepo.findAll();
-        assertThatExceptionOfType(ResourceNotFoundException.class);
+        List<AddressModel> emptyList = new ArrayList();
+        given(addressRepo.findAll()).willReturn(emptyList);
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            addressService.findAllAddresses();
+        });
     }
 
-    //@Test
+    @Test
     public void testFindAddressById() {
-        given(addressRepo.findById(1L)).willReturn(Optional.of(addressMock));
-        given(mapperService.mapAddressModelToAddressDTO(new AddressModel())).willReturn(addressDTOMock);
+        addressMock.setId(EXISTING_ID);
+        given(addressRepo.findById(EXISTING_ID)).willReturn(Optional.of(addressMock));
+        given(mapperService.mapAddressModelToAddressDTO(any(AddressModel.class))).willReturn(addressDTOMock);
         AddressDTO addr = addressService.findOneAddressById(1L);
         assertThat(addr.getStreet()).isEqualTo(addressMock.getStreet());
     }
@@ -103,7 +111,7 @@ public class AddressServiceMockitoTest {
     public void testFindAddressById_not_found() {
         given(addressRepo.findById(1L)).willReturn(Optional.empty());
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-          AddressDTO addr = addressService.findOneAddressById(1L);
+            AddressDTO addr = addressService.findOneAddressById(1L);
         });
     }
 
@@ -118,49 +126,51 @@ public class AddressServiceMockitoTest {
     public void testFindAddressBySocioId_not_found() throws Exception {
         given(addressRepo.findAddressesBySocioId(7000L)).willReturn(addressesEmptyMock);
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-           List<AddressDTO> addresses = addressService.findAddressesBySocioId(7000L);
+            List<AddressDTO> addresses = addressService.findAddressesBySocioId(7000L);
         });
     }
 
-    //@Test
-    public void testSaveAddress() {
-        CountryModel country = new CountryModel(1L, "Netherlands", "NL");
-        AddressModel address = new AddressModel(1L, "Wagner street 4", "München", "5426", "Bauern", country, "some description", AddressType.HOME, socioMock);
-        AddressDTO addressDTO = new AddressDTO(1L, "Wagner street 4", "München", "5426", "Bauern", country, "some description", AddressType.HOME, 1L);
-        given(mapperService.mapAddressDTOToAddressModel(new AddressDTO())).willReturn(address);
-        given(addressRepo.save(address)).willReturn(address);
-        given(socioRepo.findById(1L)).willReturn(Optional.of(socioMock));
-        AddressDTO addr = addressService.saveAddress(addressDTO);
-        assertThat(addr).isNotNull();
+    @Test
+    public void testSaveAddress() { 
+        addressMock.setId(EXISTING_ID);
+        given(addressRepo.save(addressMock)).willReturn(addressMock);
+        given(mapperService.mapAddressDTOToAddressModel(any(AddressDTO.class))).willReturn(addressMock);
+        given(socioRepo.findById(any(Long.class))).willReturn(Optional.of(socioMock));
+        AddressDTO addr = addressService.saveAddress(addressDTOMock);
+        assertThat(addr).isNotNull(); // why is this null!!!!!
     }
 
-    //@Test
+    @Test
     public void testUpdateAddress() {
-        AddressModel updateAddress = addressRepo.getOne(1L);
-        updateAddress.setPostalcode("edited postal code");
-        updateAddress.setStreet("edit street");
-        AddressModel updatedAddressFromDB = addressRepo.save(updateAddress);
-        assertThat(updateAddress).isEqualTo(updatedAddressFromDB);
+        addressDTOMock.setId(EXISTING_ID);
+        addressMock.setId(EXISTING_ID);
+        given(addressRepo.save(addressMock)).willReturn(addressMock);
+        given(addressRepo.findById(any(Long.class))).willReturn(Optional.of(addressMock));
+        given(mapperService.mapAddressDTOToAddressModel(any(AddressDTO.class))).willReturn(addressMock);
+        AddressDTO addr = addressService.updateAddress(addressDTOMock);
+        assertThat(addr).isNotNull(); // why is this null!!!!!
     }
 
-    //@Test
+    @Test
     public void testUpdateAddress_not_found() {
-        AddressModel updateAddress = addressRepo.getOne(NON_EXISTING_ID);
-        assertThatExceptionOfType(ResourceNotFoundException.class);
+        given(addressRepo.findById(any(Long.class))).willReturn(Optional.empty());
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            addressDTOMock.setId(any(Long.class));
+            addressService.updateAddress(addressDTOMock);
+        });
     }
 
-    //@Test
+    @Test
     public void testDeleteAddressById() {
-       
-        CountryModel country = countryRepo.findByCode("NL");
-        AddressModel address = new AddressModel(null, "Wagner street 4", "München", "5426", "Bauern", country, "some description", AddressType.HOME, socioMock);
-        addressRepo.deleteById(address.getId());
-       
+        addressRepo.deleteById(EXISTING_ID);
+        verify(addressRepo, times(1)).deleteById(eq(EXISTING_ID));
     }
 
-    //@Test
+    @Test
     public void testDeleteAddressById_not_found() {
-        SocioModel socio = socioRepo.getOne(NON_EXISTING_ID);
-        assertThatExceptionOfType(ResourceNotFoundException.class);
+        given(addressRepo.findById(any(Long.class))).willReturn(Optional.empty());
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            addressService.deleteAddressById(any(Long.class));
+        });
     }
 }
