@@ -1,6 +1,5 @@
 package com.artsgard.socioregister.service;
 
-import com.artsgard.socioregister.DTO.AddressDTO;
 import com.artsgard.socioregister.DTO.FilterDTO;
 import com.artsgard.socioregister.DTO.SocioDTO;
 import com.artsgard.socioregister.exception.ResourceNotFoundException;
@@ -32,7 +31,6 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.convention.MatchingStrategies;
 
 @ExtendWith(MockitoExtension.class)
 public class SocioServiceMockitoTest {
@@ -159,7 +157,7 @@ public class SocioServiceMockitoTest {
         given(mapperService.mapSocioDTOToSocioModel(any(SocioDTO.class))).willReturn(socioModelMock1);
         
         SocioDTO sc = socioService.updateSocio(socioDTOMock1);
-        assertThat(sc).isNotNull();
+        assertThat(sc).isNotNull(); // why is this null!!!!!
     }
 
     @Test
