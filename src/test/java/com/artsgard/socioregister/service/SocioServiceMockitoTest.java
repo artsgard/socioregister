@@ -72,7 +72,7 @@ public class SocioServiceMockitoTest {
     }
 
     @Test
-    public void findAllSociosTest() {
+    public void testFindAllSocios() {
         given(socioRepo.findAll()).willReturn(socioModelListMock);
         given(mapperService.mapSocioModelToSocioDTO(any(SocioModel.class))).willReturn(socioDTOMock1);
         List<SocioDTO> list = socioService.findAllSocios();
@@ -80,7 +80,7 @@ public class SocioServiceMockitoTest {
     }
 
     @Test
-    public void findAllSociosTest_not_found() {
+    public void testFindAllSocios_not_found() {
         List<SocioModel> emptyList = new ArrayList();
         given(socioRepo.findAll()).willReturn(emptyList);
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
@@ -89,7 +89,7 @@ public class SocioServiceMockitoTest {
     }
 
     @Test
-    public void findSocioByIdTest() {
+    public void testFindSocioById() {
         socioModelMock1.setId(EXISTING_ID);
         given(socioRepo.findById(any(Long.class))).willReturn(Optional.of(socioModelMock1));
         given(mapperService.mapSocioModelToSocioDTO(any(SocioModel.class))).willReturn(socioDTOMock1);
@@ -99,7 +99,7 @@ public class SocioServiceMockitoTest {
     }
 
     @Test
-    public void findSocioByIdTest_not_found() {
+    public void testFindSocioById_not_found() {
         given(socioRepo.findById(any(Long.class))).willReturn(Optional.empty());
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
             socioService.findSocioById(any(Long.class));
@@ -107,7 +107,7 @@ public class SocioServiceMockitoTest {
     }
 
     @Test
-    public void findSocioByUsernameTest() {
+    public void testFindSocioByUsername() {
         socioModelMock1.setId(EXISTING_ID);
         given(socioRepo.findByUsername(EXISTING_USERNAME)).willReturn(Optional.of(socioModelMock1));
         given(mapperService.mapSocioModelToSocioDTO(any(SocioModel.class))).willReturn(socioDTOMock1);
@@ -117,15 +117,15 @@ public class SocioServiceMockitoTest {
     }
 
     @Test
-    public void findSocioByUsernameTest_not_found() {
-        given(socioRepo.findByUsername(EXISTING_USERNAME)).willReturn(Optional.empty());
+    public void testFindSocioByUsername_not_found() {
+        given(socioRepo.findByUsername(NON_EXISTING_USERNAME)).willReturn(Optional.empty());
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-            socioService.findSocioByUsername(EXISTING_USERNAME);
+            socioService.findSocioByUsername(NON_EXISTING_USERNAME);
         });
     }
 
     @Test
-    public void saveSocioTest() {
+    public void testSaveSocio() {
         socioModelMock1.setId(EXISTING_ID);
         given(socioRepo.save(socioModelMock1)).willReturn(socioModelMock1);
         given(mapperService.mapSocioDTOToSocioModel(any(SocioDTO.class))).willReturn(socioModelMock1);
@@ -134,7 +134,7 @@ public class SocioServiceMockitoTest {
     }
 
     @Test
-    public void updateSocioTest() {
+    public void testUpdateSocio() {
         socioDTOMock1.setId(EXISTING_ID);
         socioModelMock1.setId(EXISTING_ID);
         given(socioRepo.findById(any(Long.class))).willReturn(Optional.of(socioModelMock1));
@@ -146,7 +146,7 @@ public class SocioServiceMockitoTest {
     }
 
     @Test
-    public void updateSocioTest_not_found() {
+    public void testUpdateSocio_not_found() {
         given(socioRepo.findById(any(Long.class))).willReturn(Optional.empty());
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
             socioDTOMock1.setId(any(Long.class));
@@ -155,13 +155,13 @@ public class SocioServiceMockitoTest {
     }
 
     @Test
-    public void deleteSocioByIdTest() {
+    public void testDeleteSocioById() {
         socioRepo.deleteById(EXISTING_ID);
         verify(socioRepo, times(1)).deleteById(eq(EXISTING_ID));
     }
 
     @Test
-    public void deleteSocioByIdTest_not_found() {
+    public void testDeleteSocioById_not_found() {
         given(socioRepo.findById(any(Long.class))).willReturn(Optional.empty());
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
             socioService.deleteSocioById(any(Long.class));
@@ -169,21 +169,21 @@ public class SocioServiceMockitoTest {
     }
 
     @Test
-    public void hasSocioByIdTest() {
+    public void testHasSocioById() {
         given(socioRepo.existsById(any(Long.class))).willReturn(true);
         Boolean flag = socioService.hasSocioById(any(Long.class));
         assertThat(flag).isTrue();
     }
     
     @Test
-    public void hasSocioByIdTest_false() {
+    public void testHasSocioById_false() {
         given(socioRepo.existsById(any(Long.class))).willReturn(false);
         Boolean flag = socioService.hasSocioById(any(Long.class));
         assertThat(flag).isFalse();
     }
 
     @Test
-    public void isSocioActiveByIdTest() {
+    public void testIsSocioActiveById() {
         socioModelMock1.setId(EXISTING_ID);
         given(socioRepo.findById(any(Long.class))).willReturn(Optional.of(socioModelMock1));
         socioModelMock1.setActive(Boolean.TRUE);
@@ -192,7 +192,7 @@ public class SocioServiceMockitoTest {
     }
 
     @Test
-    public void isSocioActiveByIdTest_not_found() {
+    public void testIsSocioActiveById_not_found() {
         given(socioRepo.findById(any(Long.class))).willReturn(Optional.empty());
          Assertions.assertThrows(ResourceNotFoundException.class, () -> {
             socioService.isSocioActiveById(any(Long.class));

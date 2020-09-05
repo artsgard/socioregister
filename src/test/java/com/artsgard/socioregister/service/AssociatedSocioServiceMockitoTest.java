@@ -95,7 +95,7 @@ public class AssociatedSocioServiceMockitoTest {
     }
 
     @Test
-    public void getAssociatedSocioBySocioIdAndAssociatedSocioId() {
+    public void testGetAssociatedSocioBySocioIdAndAssociatedSocioId() {
         given(associatedSocioRepository.getAssociatedSocioBySocioIdAndAssociatedSocioId(SOCIO_ID, ASSOCIATED_SOCIO_ID))
                 .willReturn(Optional.of(associatedSocioMock));
 
@@ -105,7 +105,7 @@ public class AssociatedSocioServiceMockitoTest {
     }
 
     @Test
-    public void getAssociatedSocioBySocioIdAndAssociatedSocioId_not_found() {
+    public void testGetAssociatedSocioBySocioIdAndAssociatedSocioId_not_found() {
         given(associatedSocioRepository.getAssociatedSocioBySocioIdAndAssociatedSocioId(SOCIO_ID, ASSOCIATED_SOCIO_ID))
                 .willReturn(Optional.empty());
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
