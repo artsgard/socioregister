@@ -20,7 +20,7 @@ public class DBConfig {
     public DataSource devDatabaseConnection() {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.url("jdbc:postgresql://localhost:5432/socio_db");
-        //dataSourceBuilder.url("jdbc:postgresql://sociodb:5432/socio_db");
+        //dataSourceBuilder.url("jdbc:postgresql://socioregisterdb:5432/socio_db");
         dataSourceBuilder.username("postgres");
         dataSourceBuilder.password("admin");
         return dataSourceBuilder.build();
@@ -42,7 +42,7 @@ public class DBConfig {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.url("jdbc:mysql://localhost:3306/socio_db?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useLegacyDatetimeCode=false&serverTimezone=UTC");
         //dataSourceBuilder.url("jdbc:postgresql://localhost:5432/socio_db");
-        //dataSourceBuilder.url("jdbc:postgresql://sociodb:5432/socio_db");
+        //dataSourceBuilder.url("jdbc:postgresql://socioregisterdb:5432/socio_db");
         dataSourceBuilder.username("root");
         dataSourceBuilder.password("admin");
         return dataSourceBuilder.build();
