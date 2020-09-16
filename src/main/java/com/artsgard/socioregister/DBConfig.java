@@ -44,7 +44,7 @@ public class DBConfig {
         //dataSourceBuilder.url("jdbc:postgresql://localhost:5432/socio_db");
         //dataSourceBuilder.url("jdbc:postgresql://socioregisterdb:5432/socio_db");
         dataSourceBuilder.username("root");
-        dataSourceBuilder.password("admin");
+        dataSourceBuilder.password("root");
         return dataSourceBuilder.build();
     }
 }

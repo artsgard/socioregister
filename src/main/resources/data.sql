@@ -32,5 +32,5 @@ VALUES ('Edmondstraat 36','Heerlen', '5467CZ', 'Limburg', (SELECT id FROM countr
 INSERT INTO address (street, city, postalcode, province, country_id, description, address_type, socio_id) 
 VALUES ('ZuidWest 36','Amsterdam', '53454CZ', 'Zuid Holland', (SELECT id FROM country WHERE code='NL'), 'some other story', 'HOME', 1);
 
-INSERT INTO socio_associated_socio (socio_id, associated_socio_id) VALUES ('1','2');
-INSERT INTO socio_associated_socio (socio_id, associated_socio_id) VALUES ('1','3');
+INSERT INTO socio_associated_socio (socio_id, associated_socio_id, associated_socio_date, associated_socio_state) VALUES ('1','2','2019-08-12 09:50:45', 'PENDING');
+INSERT INTO socio_associated_socio (socio_id, associated_socio_id, associated_socio_date, associated_socio_state) VALUES ('1','3','2019-08-12 09:50:45', 'PENDING');
