@@ -53,7 +53,7 @@ In this case the docker will start the image in a dev-mode.
 
 ### DB Initialization
 
-Db initialization is a tricky thing but essential when frequently changing to different environments, using Spring Profiles. DB and data initialization works differently for each db-vendor (Postgres, Oracle, Mysql etc.). Next read what I know about it, when using jpa, which I am learning very much by trail and error:
+Db initialization is a tricky thing but essential when frequently deploying and changing to different environments, using Spring Profiles. DB and data initialization works differently for each db-vendor (Postgres, Oracle, Mysql etc.). Next read what I know about it, when using jpa, which I am learning very much by trail and error:
 
 	1) each different DB-type, H2, Postgres etc, has their own query and hibernate dialects.
 	
