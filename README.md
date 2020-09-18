@@ -67,7 +67,7 @@ Db initialization is a tricky thing but essential when frequently changing to di
 		-spring.jpa.generate-ddl=true
 		-spring.jpa.hibernate.ddl-auto=create  update / create-drop / none 
 		
-First try, as a matter of learing the porcess, things out at localhost. Next you have to configurate docker-compose in order to do the initializing process inside the counter. This is a tricky part when more than one DB is used. Here I currently having some problems see pls the next Stackoverflow link: 
+First try, as a matter of learing the porcess, things out at localhost. Next you have to configurate docker-compose in order to do the initializing process inside the container. This is a tricky part when more than one DB is used. Here I currently have some problems see pls the next Stackoverflow link: 
 	
 	https://stackoverflow.com/questions/63929050/fatal-database-does-not-exist-error-when-trying-to-docker-a-springboot-applicat	
 	
