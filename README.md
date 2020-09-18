@@ -45,8 +45,11 @@ Like I said before at this part I would like to elaborate on testing and DB init
 
 ### Spring Profiles
 
-But first note a new feature called Spring Profiles present at the resources folder and the DBConfig class at the root. The property spring.profiles.active=dev, which sets the different profiles, you will find at application.properties. There are three profile-options present: test, dev, and pro. Each option points at a different DB. You may simply change the spring.profiles.active= into test, dev, or prod and see for yourself the results. To see it work correctly you first have to install and initialize each single db (H2, Postgres and MySQL).
+But first note a new feature called Spring Profiles. Its configuration is to be found at the resources folder and the DBConfig class at the root. The property spring.profiles.active=, which sets the different profiles, you will find at src.main.resources.application.properties. There are three profile-options present: test, dev, and pro. Each option points to a different DB. You may simply change the spring.profiles.active= into test, dev, or prod and see for yourself the results. To see it work correctly on localhost, you first have to install and initialize each single db (H2, Postgres and MySQL). It is obvious that this Spring feature is of importance in a Micro-Service setup. You may config the profile at the dockerfile of the Springboot application like this: 
 
+	ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Dspring.profiles.active=dev", "-jar", "/app/app.jar"]
+
+In this case the docker will start the image in a dev-mode.
 
 ### DB Initialization
 
