@@ -53,19 +53,23 @@ In this case the docker will start the image in a dev-mode.
 
 ### DB Initialization
 
-Db initialization is a tricky thing but an importanty feature when changing frequently to different environments. Next read what I know about it which I learned very much by trail and error:
+Db initialization is a tricky thing but essential when frequently changing to different environments, using Spring Profiles. DB and data initialization works differently for each db-vendor (Postgres, Oracle, Mysql etc.). Next read what I know about it, when using jpa, which I am learning very much by trail and error:
 
-	1) each different DB-type, H2, Postgres etc, has their own query dialects. At the src/main/resources you`ll find a schema of MySQL.
+	1) each different DB-type, H2, Postgres etc, has their own query and hibernate dialects.
 	
-	2) See to it that all model/ entity classes have the correct hibernate/jpa annotations concerning each table and their relations: very important!
+	2) See to it that all model/ entity classes have the correct hibernate/jpa annotations concerning each table and their relations!
 	
-	3) Write the insert-data into a data.sql file at src/main/resources, using the correct query langauge for each dialect (Springboot auto-config will pickup that file);
+	3) Write the data to be inserted into a data.sql file at src/main/resources, using the correct syntax for each dialect;
 	
 	4) Use the following properties for initialization (see application(-prod/dev/test).properties): 
-		-spring.jpa.hibernate.ddl-auto=create   / none
-		-spring.datasource.initialization-mode=always   / never
 		-spring.datasource.initialize=true   / false
-	The first option create/always/true I use only at the first time starting the app when there is no DB present (of course after installing the servers for each DB-type). I noted that these props work best with H2 and Postgres. (There is also the issue of declaring the DB as Schema or Catalog at each Model/ Entity Java class, which MySQL likes most.....)
+		-spring.datasource.initialization-mode=always   / never
+		-spring.jpa.generate-ddl=true
+		-spring.jpa.hibernate.ddl-auto=create  update / create-drop / none 
+		
+First try, as a matter of learing the porcess, things out at localhost. Next you have to configurate docker-compose in order to do the initializing process inside the counter. This is a tricky part when more than one DB is used. Here I currently having some problems see pls the next Stackoverflow link: 
+	
+	https://stackoverflow.com/questions/63929050/fatal-database-does-not-exist-error-when-trying-to-docker-a-springboot-applicat	
 	
 ### Spring Testing
 
