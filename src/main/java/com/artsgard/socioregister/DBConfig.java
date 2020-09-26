@@ -15,14 +15,14 @@ import org.springframework.context.annotation.Profile;
 @ConfigurationProperties("spring.datasource")
 public class DBConfig {
 
-    @Profile("dev")
+    @Profile("prod")
     @Bean(name = "postgresDataSource")
     public DataSource devDatabaseConnection() {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.url("jdbc:postgresql://localhost:5432/socio_db");
         //dataSourceBuilder.url("jdbc:postgresql://socioregisterdb:5432/socio_db");
         dataSourceBuilder.username("postgres");
-        dataSourceBuilder.password("admin");
+        dataSourceBuilder.password("Candita123");
         return dataSourceBuilder.build();
     }
 
@@ -36,7 +36,7 @@ public class DBConfig {
         return dataSourceBuilder.build();
     }
 
-    @Profile("prod")
+    @Profile("dev")
     @Bean
     public DataSource prodDatabaseConnection() {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
@@ -44,7 +44,7 @@ public class DBConfig {
         //dataSourceBuilder.url("jdbc:postgresql://localhost:5432/socio_db");
         //dataSourceBuilder.url("jdbc:postgresql://socioregisterdb:5432/socio_db");
         dataSourceBuilder.username("root");
-        dataSourceBuilder.password("root");
+        dataSourceBuilder.password("Candita123");
         return dataSourceBuilder.build();
     }
 }

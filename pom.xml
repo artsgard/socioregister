@@ -19,8 +19,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <docker.image.prefix>artsgardcloud</docker.image.prefix>
-        <project.build.finalName>socioregister</project.build.finalName>
-        <project.artifactId>SocioRegister</project.artifactId>
+        <project.build.finalName>SocioRegister</project.build.finalName>
+        <project.artifactId>socioregister</project.artifactId>
     </properties>
 
     <dependencies>
