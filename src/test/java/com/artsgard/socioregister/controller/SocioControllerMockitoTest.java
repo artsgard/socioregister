@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -119,7 +120,7 @@ public class SocioControllerMockitoTest {
         SocioDTO newSocio = new SocioDTO(null, "js edited", "secret", "Johann Sebastian", "Bach", "jsbach@gmail.com", true, new <LanguageModel>ArrayList(), new <AddressDTO>ArrayList());
         newSocio.setRegisterDate(new Timestamp(1479250540110L));
         newSocio.setLastCheckinDate(new Timestamp(1479250540110L));
-        given(socioService.saveSocio(newSocio)).willReturn(newSocio);
+        given(socioService.saveSocio(any(SocioDTO.class))).willReturn(newSocio);
         
         MockHttpServletResponse response = mockMvc
                 .perform(MockMvcRequestBuilders.post("/socio/")
@@ -137,7 +138,7 @@ public class SocioControllerMockitoTest {
     public void testUpdatesocio() throws Exception {
         SocioDTO editSocio = new SocioDTO(1L, "js edited", "secret", "Johann Sebastian", "Bach", "jsbach@gmail.com", true, new <LanguageModel>ArrayList(), new <AddressDTO>ArrayList());
         editSocio.setRegisterDate(new Timestamp(1479250540110L));
-        given(socioService.updateSocio(editSocio)).willReturn(editSocio);
+        given(socioService.updateSocio(any(SocioDTO.class))).willReturn(editSocio);
         
         MockHttpServletResponse response = mockMvc
                 .perform(MockMvcRequestBuilders.put("/socio/")

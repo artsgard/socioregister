@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "socio") //, catalog = "socio_db") , schema = "socio_db") , schema = "socio_db")
-public class SocioModel implements Serializable { // UserDetails
+public class SocioModel implements Serializable {
 
     public SocioModel(Long id, String username, String password, String firstName, String lastName, String email, 
             Boolean active, List<LanguageModel> socioLanguages, List<AddressModel> socioAddresses) {
